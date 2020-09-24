@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>leaflet-map-csv</title>
+  <title>leaflet-map-csv-johan</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="utf-8">
 
@@ -23,6 +23,7 @@
 <body>
 
   <!-- Insert HTML division tag to layout the map -->
+  <div id="leaflet map csv">EDIT your map title</div>
   <div id="map"></div>
 
   <!-- Insert Javascript (.js) code to create the map -->
@@ -30,28 +31,44 @@
 
   // Set up initial map center and zoom level
   var map = L.map('map', {
-    center: [41.57, -72.69], // EDIT latitude, longitude to re-center map
-    zoom: 9,  // EDIT from 1 to 18 -- decrease to zoom out, increase to zoom in
+    center: [41.77, -72.69], // EDIT latitude, longitude to re-center map
+    zoom: 12,  // EDIT from 1 to 18 -- decrease to zoom out, increase to zoom in
     scrollWheelZoom: false
   });
 
   /* Control panel to display map layers */
   var controlLayers = L.control.layers( null, null, {
-    position: "topright",
+    position: "toprright",
     collapsed: false
   }).addTo(map);
 
-  // display Carto basemap tiles with light features and labels
+  / display Carto basemap tiles with light features and labels
   var light = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
-  }).addTo(map); // EDIT - insert or remove ".addTo(map)" before last semicolon to display by default
+  }); // EDIT - insert or remove ".addTo(map)" before last semicolon to display by default
   controlLayers.addBaseLayer(light, 'Carto Light basemap');
 
   /* Stamen colored terrain basemap tiles with labels */
   var terrain = L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
     attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
-  }); // EDIT - insert or remove ".addTo(map)" before last semicolon to display by default
+  }).addTo(map); // EDIT - insert or remove ".addTo(map)" before last semicolon to display by default
   controlLayers.addBaseLayer(terrain, 'Stamen Terrain basemap');
+
+  /* Display a blue point marker with pop-up text */
+  L.marker([41.77, -72.69]).addTo(map) // EDIT latitude, longitude to re-position marker
+  .bindPopup("Center"); // EDIT pop-up text message
+
+  /* Upload Latitude/Longitude markers from data.csv file, show Title in pop-up, and override initial center and zoom to fit all in map */
+   var customLayer = L.geoJson(null, {
+    onEachFeature: function(feature, layer) {
+      layer.bindPopup(feature.properties.Title);
+    }
+   });
+   var runLayer = omnivore.csv('data.csv', null, customLayer)
+   .on('ready', function() {
+    map.fitBounds(runLayer.getBounds());
+   }).addTo(map);
+   controlLayers.addOverlay(customLayer, 'Markers from data.csv');
 
   // see more basemap options at https://leaflet-extras.github.io/leaflet-providers/preview/
 
@@ -69,7 +86,7 @@
       var marker = L.marker([row.Latitude, row.Longitude], {
         opacity: 1
       }).bindPopup(row.Title)
-      
+
       marker.addTo(map)
     }
 
