@@ -4,7 +4,7 @@ Build a simple Leaflet map with point markers from a CSV file.
 ![Screenshot](leaflet-map-csv.png)
 
 ## Demo
-https://handsondataviz.github.io/leaflet-map-csv/
+https://johanh0927.github.io/leaflet-map-csv/
 
 Sample data of select universities and colleges around CT by HandsOnDataViz.
 
